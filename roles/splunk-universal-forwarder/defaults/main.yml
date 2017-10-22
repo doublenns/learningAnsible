@@ -1,0 +1,16 @@
+---
+
+splunk_uf_rpm_url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.2&product=universalforwarder&filename=splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm&wget=true'
+splunk_uf_rpm_md5: 1e08bf0d23a02cbd1f96a5b358516d0d
+
+splunk_uf_deb_url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.2&product=universalforwarder&filename=splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-amd64.deb&wget=true'
+splunk_uf_deb_md5: 1ad6be561a4bdd0c9acb593827fbc719 
+
+splunk_uf_tgz_url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.2&product=universalforwarder&filename=splunkforwarder-6.5.2-67571ef4b87d-Linux-x86_64.tgz&wget=true'
+splunk_uf_tgz_md5: 85632aa28dc43268cd5b1954e4418050
+
+splunk_home: /opt/splunkforwarder/
+splunk_executable: /opt/splunkforwarder/bin/splunk
+
+deployment_server: splunk.example.com
+deployment_port: 8089

@@ -1,0 +1,51 @@
+---
+- name: Check if Splunk service exists
+  stat:
+    path: /etc/rc.d/init.d/splunk
+  register: service_status
+  tags: install
+
+- debug: var=service_status
+
+
+- block:
+    - name: Download Splunk Universal Forwarder RPM
+      get_url:
+        url: "{{ splunk_uf_rpm_url }}"
+        dest: /tmp/splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm
+        checksum: md5:{{ splunk_uf_rpm_md5 }}
+      tags: install
+
+    - name: yum install Splunk Universal Forwarder
+      become: yes
+      yum:
+        name: /tmp/splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm
+        state: installed
+      tags: install
+
+    - name: Initialize Splunk as service and accept license
+      become: yes
+      command: "{{ splunk_executable }} enable boot-start --accept-license"
+      tags: install
+
+  when: not service_status.stat.exists
+
+
+- name: Point forwarder to deployment server for further config
+  become: yes
+  copy:
+    src: deploymentclient.conf
+    dest: /opt/splunkforwarder/etc/system/local/deploymentclient.conf
+    mode: 0600
+  tags: configure
+  notify:
+    - restart Splunk
+
+
+- name: ensure Splunk service is started
+  become: yes
+  service:
+    name: splunk
+    state: started
+    enabled: yes
+  tags: install
