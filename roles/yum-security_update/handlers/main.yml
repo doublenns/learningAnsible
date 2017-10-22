@@ -1,0 +1,34 @@
+---
+- name: Reboot sequence
+  changed_when: "true"
+  debug: msg='trigger machine reboot sequence'
+  notify:
+    - Get current time
+    - Reboot system
+    - Wait for system to finish reboot
+    - Verify a reboot was actually initiated
+
+- name: Get current time
+  command: /bin/date +%s
+  register: reboot_time
+
+- name: Reboot system
+  become: yes
+  shell: sleep 2 && shutdown -r now "Reboot triggered by Ansible"
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Wait for system to finish reboot
+  become: false
+  local_action:
+    module: wait_for
+      host="{{ inventory_hostname }}"
+      state=started
+      port=22
+      delay=12
+      timeout=300
+
+- name: Verify a reboot was actually initiated
+  # Machine should have started after it has been rebooted
+  shell: (( `date +%s` - `awk -F . '{print $1}' /proc/uptime` > {{ reboot_time.stdout }} ))

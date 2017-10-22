@@ -1,0 +1,7 @@
+---
+- name: Apply Minimal Yum Security Updates
+  become: yes
+  command: "yum update-minimal --security -y"
+  tags: update
+  notify:
+   - Reboot sequence
