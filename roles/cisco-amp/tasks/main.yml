@@ -1,0 +1,40 @@
+---
+- name: Conditionally set AMP RPM filename for RHEL 6
+  set_fact:
+    fireamp_rpm_file: 'el6_fireamp_connector.rpm'
+  when:
+      - ansible_distribution == "RedHat"
+      - ansible_distribution_major_version == "6"
+
+- name: Check if Amp service exists
+  stat:
+    path: /usr/lib/systemd/system/cisco-amp.service
+  register: service_status
+  tags: install
+
+- debug: var=service_status
+- debug: var=fireamp_rpm_file
+
+- block:
+    - name: Copy rpm file for Cisco AMP
+      copy:
+        src: "{{ fireamp_rpm_file }}"
+        dest: /tmp/
+      tags: install
+
+    - name: Install Cisco AMP
+      become: yes
+      package:
+        name: "/tmp/{{ fireamp_rpm_file }}"
+        state: installed
+      tags: install
+
+  when: not service_status.stat.exists
+
+- name: Ensure the Cisco Amp service is running
+  become: yes
+  service:
+    name: cisco-amp
+    state: started
+    enabled: yes
+  tags: install
